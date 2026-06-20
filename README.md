@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="assets/example.png" width="80%">
+</p>
+
+<p align="center">
+  <img src="assets/method.png" width="80%">
+</p>
+
 # Stage 0: Data and Environment Preparation
 ```bash
 conda create -n HM python=3.12
