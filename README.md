@@ -2,10 +2,6 @@
   <img src="assets/example.png" width="80%">
 </p>
 
-<p align="center">
-  <img src="assets/method.png" width="80%">
-</p>
-
 # Stage 0: Data and Environment Preparation
 ```bash
 conda create -n HM python=3.12
@@ -157,4 +153,8 @@ bash scripts/run_social_analysis.sh \
   --channel_lag_bins 0:3,4:7,8:14,15:28 \
   --make_figures 1
 ```
+
+<p align="center">
+  <img src="assets/method.png" width="80%">
+</p>
 
