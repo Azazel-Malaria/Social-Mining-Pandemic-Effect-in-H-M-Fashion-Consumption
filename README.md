@@ -18,7 +18,7 @@ bash scripts/prepare_amazon.sh \
   --review_sample_ratio 1.0
 ```
 
-# Stage1: Amazon Review Retrieval
+# Stage 1: Amazon Review Retrieval
 ```bash
 bash scripts/run_process_data.sh \
   --data_root ./data \
