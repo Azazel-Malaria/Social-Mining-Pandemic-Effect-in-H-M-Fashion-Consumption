@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$ROOT_DIR"
+export PYTHONPATH="$ROOT_DIR:${PYTHONPATH:-}"
+source "$SCRIPT_DIR/_argparse.sh" "$@"
+
+# Social inference v2:
+#   1) exports behavior-calibrated item embeddings from the trained checkpoint;
+#   2) parses native routed prompt prototypes: material/color/design/occasion/target/value/social_*;
+#   3) auto-generates fixed generic-clothing axis prompts with local Qwen if absent;
+#   4) encodes H&M item metadata text and axis prompts with the same text encoder, then scores continuous semantic axes;
+#   5) builds monthly/weekly/user/channel panels for one-by-one social experiments.
+
+CMD=(python -m util.social_inference
+  --data_root "${data_root:-./data}"
+  --output_root "${output_root:-./output}"
+  --social_output_root "${social_output_root:-./social_output/k}"
+  --item_prefix "${item_prefix:-clip}"
+  --use_knowledge "${use_knowledge:-1}"
+  --include_temporal "${include_temporal:-0}"
+  --checkpoint "${checkpoint:-}"
+  --allow_base_fallback "${allow_base_fallback:-0}"
+  --cuda_id "${cuda_id:-0}"
+  --batch_size "${batch_size:-2048}"
+  --hidden_dim "${hidden_dim:-256}"
+  --item_adapter_layers "${item_adapter_layers:-2}"
+  --item_adapter_heads "${item_adapter_heads:-4}"
+  --user_layers "${user_layers:-2}"
+  --user_heads "${user_heads:-4}"
+  --ffn_dim "${ffn_dim:-512}"
+  --dropout "${dropout:-0.1}"
+  --max_history_items "${max_history_items:-20}"
+  --use_two_tower "${use_two_tower:-0}"
+  --item_encode_chunk_size "${item_encode_chunk_size:-2048}"
+  --candidate_chunk_size "${candidate_chunk_size:-4}"
+  --transformer_injection "${transformer_injection:-0}"
+  --transformer_injection_layers "${transformer_injection_layers:-0}"
+  --transformer_injection_strength "${transformer_injection_strength:-1.0}"
+  --auto_generate_axis_prompts "${auto_generate_axis_prompts:-1}"
+  --axis_prompt_json "${axis_prompt_json:-}"
+  --axis_prompt_force_regenerate "${axis_prompt_force_regenerate:-0}"
+  --mock_qwen_axis_prompts "${mock_qwen_axis_prompts:-0}"
+  --qwen_model "${qwen_model:-Qwen/Qwen3-4B-Instruct-2507}"
+  --axis_qwen_max_input_tokens "${axis_qwen_max_input_tokens:-4096}"
+  --axis_qwen_max_new_tokens "${axis_qwen_max_new_tokens:-512}"
+  --axis_qwen_temperature "${axis_qwen_temperature:-0.2}"
+  --axis_prompts_per_polarity "${axis_prompts_per_polarity:-4}"
+  --axis_score_space "${axis_score_space:-item_text}"
+  --text_encoder "${text_encoder:-auto}"
+  --axis_encode_batch_size "${axis_encode_batch_size:-32}"
+  --axis_text_max_length "${axis_text_max_length:-256}"
+  --axis_score_tau "${axis_score_tau:-1.0}"
+  --prototype_softmax_tau "${prototype_softmax_tau:-0.2}"
+  --use_copula_calibration "${use_copula_calibration:-0}"
+  --dense_item_month_panel "${dense_item_month_panel:-1}"
+  --max_user_month_rows "${max_user_month_rows:-2000000}"
+  --covid_csv "${covid_csv:-}"
+  --covid_location "${covid_location:-World}"
+  --use_google_mobility "${use_google_mobility:-0}"
+  --google_mobility_csv "${google_mobility_csv:-}"
+  --seed "${seed:-42}"
+)
+"${CMD[@]}"
